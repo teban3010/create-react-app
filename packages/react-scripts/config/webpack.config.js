@@ -390,11 +390,22 @@ module.exports = function (webpackEnv) {
                 name: 'static/media/[name].[hash:8].[ext]',
               },
             },
+            {
+              test: /\.ttf$/,
+              loader: "url-loader", // or directly file-loader
+              include: path.resolve(__dirname, "node_modules/react-native-vector-icons"),
+            },
             // Process application JS with Babel.
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
-              include: paths.appSrc,
+              include: function (path) {
+                return (
+                  path.includes(paths.appSrc) ||
+                  (path.includes('react-native-') &&
+                    !path.includes('react-native-web'))
+                );
+              },
               loader: require.resolve('babel-loader'),
               options: {
                 customize: require.resolve(
